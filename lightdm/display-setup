@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Symlink to /etc/lightdm/display-setup
+# sudo ln -s ~/dotfiles/lightdm/display-setup /etc/lightdm/display-setup
+
+INT=$(xrandr | grep "eDP" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+EXT=$(xrandr | grep -E -i "^DP" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+EXT2=$(xrandr | grep "HDMI" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+
+if (xrandr | grep "$EXT disconnected" && xrandr | grep "$EXT2 disconnected"); then
+    if (grep -E '^#.*lightdm-bg.jpg' /etc/lightdm/slick-greeter.conf); then
+        gawk -i inplace '/backgrounds/ {sub(/^#/, "\n"); sub(/^[^\n]/, "#&"); sub(/^\n/, "")} 1' /etc/lightdm/slick-greeter.conf
+    fi
+else
+    if (grep -E '^#.*1440' /etc/lightdm/slick-greeter.conf); then
+        gawk -i inplace '/backgrounds/ {sub(/^#/, "\n"); sub(/^[^\n]/, "#&"); sub(/^\n/, "")} 1' /etc/lightdm/slick-greeter.conf
+    fi
+    xrandr --output $INT --off --output $EXT --auto
+fi

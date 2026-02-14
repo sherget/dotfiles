@@ -1,0 +1,13 @@
+#!/bin/bash
+
+MOUSE_DEVICE_ID=$(xinput --list | grep "Logi" | awk '{print $6}' | sed 's/id=//g')
+echo "Mouse device id is: $MOUSE_DEVICE_ID"
+
+xinput set-prop "$MOUSE_DEVICE_ID" 'Coordinate Transformation Matrix' 2.0 0 0 0 2.0 0 0 0 1
+echo "Setting Coordinate Transformation Matrix to: 2.0 0 0 0 2.0 0 0 1"
+
+xinput set-prop "$MOUSE_DEVICE_ID" 'libinput Accel Speed' 0
+echo "Setting libinput Accel Speed to: 0"
+
+xinput set-prop "$MOUSE_DEVICE_ID" 'libinput Accel Profile Enabled' 0 0
+echo "Setting libinput Accel Profile Enabled to: 0 0"

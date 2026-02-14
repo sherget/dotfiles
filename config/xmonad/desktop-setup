@@ -1,0 +1,18 @@
+#!/bin/sh
+
+INT=$(xrandr | grep "eDP" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+EXT=$(xrandr | grep -E -i "^DP" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+EXT2=$(xrandr | grep "HDMI" | grep " connected" | sed -e "s/\([A-Z0-9]\+\) connected.*/\1/")
+
+if (xrandr | grep "$EXT disconnected" && xrandr | grep "$EXT2 disconnected"); then
+    feh --bg-scale ~/pictures/backgrounds/polygon-lake.jpg
+else
+    feh --bg-scale ~/pictures/backgrounds/roronoa-zorro.jpg
+fi
+
+xcompmgr -n &
+stalonetray -c ~/dotfiles/stalonetray/stalonetrayrc &
+nm-applet &
+volumeicon &
+blueman-applet &
+fcitx5 &

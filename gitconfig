@@ -1,0 +1,15 @@
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = true
+    dark = true 
+    hunk-header-style = omit    
+[user]
+	name = anonymous
+	email = anon@anonymo.us
+#[url "git@github.com:"]
+#	insteadOf = https://github.com/

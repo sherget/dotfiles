@@ -1,0 +1,4 @@
+config/zsh/.oh-my-zsh
+config/zsh/.zprofile
+config/zsh/.zsh_history
+config/nvim/vscode-php-debug
