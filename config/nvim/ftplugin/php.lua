@@ -19,6 +19,7 @@ vim.keymap.set('n', '<leader>pmm', vim.cmd.PhpactorContextMenu)
 vim.keymap.set('n', '<leader>pmf', vim.cmd.PhpactorMoveFile)
 vim.keymap.set('n', '<leader>pce', vim.cmd.PhpactorClassExpand)
 vim.keymap.set('n', '<leader>pcn', vim.cmd.PhpactorClassNew)
+vim.keymap.set('n', '<leader>pic', vim.cmd.PhpactorImportMissingClasses)
 
 -- arrow shortcut
 vim.keymap.set('i', '♠', '->')
