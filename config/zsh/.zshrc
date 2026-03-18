@@ -51,3 +51,6 @@ if [[ $(grep -oP '^ID=\K\w+' /etc/os-release) == "arch" ]]; then
 fi
 
 source $ZDOTDIR/keychain.zsh
+
+# opencode
+export PATH=/home/shin/.opencode/bin:$PATH
