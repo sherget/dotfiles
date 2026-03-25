@@ -285,6 +285,29 @@ require('lazy').setup({
             '--hidden', -- Search hidden files
             '--no-ignore', -- Search files ignored by .gitignore
           },
+          mappings = {
+            i = {
+              ['<C-g>'] = function(prompt_bufnr)
+                local telescope = require 'telescope.builtin'
+                local actions = require 'telescope.actions'
+                local action_state = require 'telescope.actions.state'
+                local picker = action_state.get_current_picker(prompt_bufnr)
+                picker.respect_gitignore = not picker.respect_gitignore
+                actions.close(prompt_bufnr)
+                local gitignore_patterns = {}
+                local gitignore_file = io.open('.gitignore', 'r')
+                if gitignore_file then
+                  for line in gitignore_file:lines() do
+                    if line ~= '' and not line:match '^#' then
+                      table.insert(gitignore_patterns, line)
+                    end
+                  end
+                  gitignore_file:close()
+                end
+                telescope.find_files { file_ignore_patterns = picker.respect_gitignore and gitignore_patterns or {}, hidden = true }
+              end,
+            },
+          },
         },
         pickers = {
           find_files = {
@@ -317,7 +340,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[F]ind existing buffers' })
       vim.keymap.set('n', '<leader>sb', '<CMD>Telescope dap list_breakpoints<CR>', { desc = '[S]earch [B]reakpoints' })
 
       -- Slightly advanced example of overriding default behavior and theme

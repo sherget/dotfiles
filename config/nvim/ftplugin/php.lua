@@ -9,17 +9,17 @@ local on_attach = function(_, bufnr)
   return vim.lsp.get_clients { bufnr = bufnr }
 end
 
-vim.keymap.set('n', '<leader>pec', vim.cmd.PhpactorExtractConstant)
-vim.keymap.set('v', '<leader>pec', vim.cmd.PhpactorExtractConstant)
-vim.keymap.set('n', '<leader>pee', vim.cmd.PhpactorExtractExpression)
-vim.keymap.set('v', '<leader>pee', vim.cmd.PhpactorExtractExpression)
-vim.keymap.set('v', '<leader>pem', vim.cmd.PhpactorExtractMethod)
-vim.keymap.set('n', '<leader>pem', vim.cmd.PhpactorExtractMethod)
-vim.keymap.set('n', '<leader>pmm', vim.cmd.PhpactorContextMenu)
-vim.keymap.set('n', '<leader>pmf', vim.cmd.PhpactorMoveFile)
-vim.keymap.set('n', '<leader>pce', vim.cmd.PhpactorClassExpand)
-vim.keymap.set('n', '<leader>pcn', vim.cmd.PhpactorClassNew)
-vim.keymap.set('n', '<leader>pic', vim.cmd.PhpactorImportMissingClasses)
+vim.keymap.set('n', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
+vim.keymap.set('v', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
+vim.keymap.set('n', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
+vim.keymap.set('v', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
+vim.keymap.set('v', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
+vim.keymap.set('n', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
+vim.keymap.set('n', '<leader>pmm', vim.cmd.PhpactorContextMenu, { desc = '[P]HPActor [C]ontext [M]enu' })
+vim.keymap.set('n', '<leader>pmf', vim.cmd.PhpactorMoveFile, { desc = '[P]HPActor [M]ove [F]ile' })
+vim.keymap.set('n', '<leader>pce', vim.cmd.PhpactorClassExpand, { desc = '[P]HPActor [C]lass [E]xpand' })
+vim.keymap.set('n', '<leader>pcn', vim.cmd.PhpactorClassNew, { desc = '[P]HPActor [C]lass [N]ew' })
+vim.keymap.set('n', '<leader>pic', vim.cmd.PhpactorImportMissingClasses, { desc = '[P]HPActor [I]mport [C]lasses' })
 
 -- arrow shortcut
 vim.keymap.set('i', '♠', '->')
