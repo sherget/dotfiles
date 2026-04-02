@@ -18,6 +18,8 @@ declare -A DOTFILE_MAP=(
     ["${DOTFILES_DIR}/config/xmonad"]="${HOME}/.config/xmonad"
     ["${DOTFILES_DIR}/config/nvim"]="${HOME}/.config/nvim"
     ["${DOTFILES_DIR}/config/phpactor"]="${HOME}/.config/phpactor"
+    ["${DOTFILES_DIR}/config/zathura"]="${HOME}/.config/zathura"
+    ["${DOTFILES_DIR}/config/fcitx5"]="${HOME}/.config/fcitx5"
     ["${DOTFILES_DIR}/config/opencode/opencode.json"]="${HOME}/.config/opencode/opencode.json"
     ["${DOTFILES_DIR}/gitconfig"]="${HOME}/.gitconfig"
 )
