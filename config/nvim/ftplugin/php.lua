@@ -1,4 +1,5 @@
 vim.bo.tabstop = 4 -- size of a hard tabstop (ts).
+
 vim.bo.shiftwidth = 4 -- size of an indentation (sw).
 vim.bo.expandtab = true -- always uses spaces instead of tab characters (et).
 vim.bo.softtabstop = 4 -- number of spac
@@ -9,17 +10,26 @@ local on_attach = function(_, bufnr)
   return vim.lsp.get_clients { bufnr = bufnr }
 end
 
-vim.keymap.set('n', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
-vim.keymap.set('v', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
-vim.keymap.set('n', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
-vim.keymap.set('v', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
-vim.keymap.set('v', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
-vim.keymap.set('n', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
-vim.keymap.set('n', '<leader>pmm', vim.cmd.PhpactorContextMenu, { desc = '[P]HPActor [C]ontext [M]enu' })
-vim.keymap.set('n', '<leader>pmf', vim.cmd.PhpactorMoveFile, { desc = '[P]HPActor [M]ove [F]ile' })
-vim.keymap.set('n', '<leader>pce', vim.cmd.PhpactorClassExpand, { desc = '[P]HPActor [C]lass [E]xpand' })
-vim.keymap.set('n', '<leader>pcn', vim.cmd.PhpactorClassNew, { desc = '[P]HPActor [C]lass [N]ew' })
-vim.keymap.set('n', '<leader>pic', vim.cmd.PhpactorImportMissingClasses, { desc = '[P]HPActor [I]mport [C]lasses' })
+vim.lsp.config['phpantom'] = {
+  cmd = { 'phpantom' },
+  filetypes = { 'php' },
+  root_markers = { 'composer.json', '.git' },
+}
+vim.lsp.enable 'phpantom'
+
+vim.keymap.set('v', '<leader>rr', vim.lsp.buf.code_action, { noremap = true, silent = true })
+
+-- vim.keymap.set('n', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
+-- vim.keymap.set('v', '<leader>pec', vim.cmd.PhpactorExtractConstant, { desc = '[P]HPActor [E]xtract [C]onstant' })
+-- vim.keymap.set('n', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
+-- vim.keymap.set('v', '<leader>pee', vim.cmd.PhpactorExtractExpression, { desc = '[P]HPActor [E]xtract [E]xpression' })
+-- vim.keymap.set('v', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
+-- vim.keymap.set('n', '<leader>pem', vim.cmd.PhpactorExtractMethod, { desc = '[P]HPActor [E]xtract [M]ethod' })
+-- vim.keymap.set('n', '<leader>pmm', vim.cmd.PhpactorContextMenu, { desc = '[P]HPActor [C]ontext [M]enu' })
+-- vim.keymap.set('n', '<leader>pmf', vim.cmd.PhpactorMoveFile, { desc = '[P]HPActor [M]ove [F]ile' })
+-- vim.keymap.set('n', '<leader>pce', vim.cmd.PhpactorClassExpand, { desc = '[P]HPActor [C]lass [E]xpand' })
+-- vim.keymap.set('n', '<leader>pcn', vim.cmd.PhpactorClassNew, { desc = '[P]HPActor [C]lass [N]ew' })
+-- vim.keymap.set('n', '<leader>pic', vim.cmd.PhpactorImportMissingClasses, { desc = '[P]HPActor [I]mport [C]lasses' })
 
 -- arrow shortcut
 vim.keymap.set('i', '♠', '->')

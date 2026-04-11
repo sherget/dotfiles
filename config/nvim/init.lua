@@ -77,6 +77,13 @@ vim.opt.scrolloff = 10
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.keymap.set('c', '<C-h>', '<Left>', { noremap = true })
+vim.keymap.set('c', '<C-l>', '<Right>', { noremap = true })
+vim.keymap.set('c', '<C-j>', '<Down>', { noremap = true })
+vim.keymap.set('c', '<C-k>', '<Up>', { noremap = true })
+vim.keymap.set('c', '<M-b>', '<C-Left>', { noremap = true })
+vim.keymap.set('c', '<M-f>', '<C-Right>', { noremap = true })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -267,6 +274,7 @@ require('lazy').setup({
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
       { 'nvim-telescope/telescope-dap.nvim' },
+      { 'nvim-telescope/telescope-live-grep-args.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
@@ -321,6 +329,21 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          ['live_grep_args'] = {
+            auto_quoting = true,
+            mappings = {
+              i = {
+                ['<C-k>'] = require('telescope-live-grep-args.actions').quote_prompt(),
+                ['<C-i>'] = require('telescope-live-grep-args.actions').quote_prompt { postfix = ' --iglob ' },
+                -- freeze the current list and start a fuzzy search in the frozen list
+                ['<C-space>'] = require('telescope-live-grep-args.actions').to_fuzzy_refine,
+              },
+            },
+            -- ... also accepts theme settings, for example:
+            -- theme = "dropdown", -- use dropdown theme
+            -- theme = { }, -- use own theme spec
+            -- layout_config = { mirror=true }, -- mirror preview pane
+          },
         },
       }
 
@@ -328,17 +351,22 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
       pcall(require('telescope').load_extension, 'dap')
+      pcall(require('telescope').load_extension, 'live_grep_args')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
+      local live_grep_args = require('telescope').extensions.live_grep_args
+      local live_grep_args_shortcuts = require 'telescope-live-grep-args.shortcuts'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>sw', live_grep_args_shortcuts.grep_word_under_cursor, { desc = '[S]earch current [W]ord' })
+      vim.keymap.set('v', '<leader>sw', live_grep_args_shortcuts.grep_visual_selection, { desc = '[S]earch current [W]ord' })
+      vim.keymap.set('n', '<leader>sg', live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      vim.keymap.set('n', '<leader>sq', builtin.quickfix, { desc = '[S]earch [Q]uickfix' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[F]ind existing buffers' })
       vim.keymap.set('n', '<leader>sb', '<CMD>Telescope dap list_breakpoints<CR>', { desc = '[S]earch [B]reakpoints' })
@@ -547,14 +575,14 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
-        --
-        phpactor = {
-          cmd = { 'phpactor', 'language-server' },
-          filetypes = { 'php' },
-          root_dir = function(fname)
-            return vim.fn.getcwd()
-          end,
-        },
+
+        -- phpactor = {
+        --   cmd = { 'phpactor', 'language-server' },
+        --   filetypes = { 'php' },
+        --   root_dir = function(fname)
+        --     return vim.fn.getcwd()
+        --   end,
+        -- },
 
         lua_ls = {
           -- cmd = {...},
@@ -585,7 +613,6 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'phpactor',
         'php-cs-fixer',
         'phpcs',
         'phpmd',
