@@ -837,49 +837,152 @@ require('lazy').setup({
 
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false, -- Treesitter 'main' does not support lazy-loading
     build = ':TSUpdate',
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' },
+    },
     config = function()
-      require('nvim-treesitter.config').setup {
-        ensure_installed = {
-          'bash',
-          'c',
-          'cpp',
-          'ruby',
-          'rust',
-          'go',
-          'diff',
-          'html',
-          'lua',
-          'luadoc',
-          'markdown',
-          'markdown_inline',
-          'query',
-          'vim',
-          'vimdoc',
-          'php',
-          'javascript',
-          'typescript',
-          'python',
-          'yaml',
-          'phpdoc',
-          'query',
-        },
-        auto_install = true,
-        highlight = {
+      local ts = require 'nvim-treesitter'
+      local ts_select = require 'nvim-treesitter-textobjects.select'
+      local ts_move = require 'nvim-treesitter-textobjects.move'
+      local ts_swap = require 'nvim-treesitter-textobjects.swap'
+
+      ts.setup {}
+      ts.install {
+        'bash',
+        'c',
+        'cpp',
+        'ruby',
+        'rust',
+        'go',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'php',
+        'javascript',
+        'typescript',
+        'python',
+        'yaml',
+        'phpdoc',
+      }
+
+      require('nvim-treesitter-textobjects').setup {
+        select = {
           enable = true,
-          additional_vim_regex_highlighting = { 'ruby', 'php' },
-        },
-        indent = {
-          enable = true,
-          disable = { 'ruby', 'php' },
+          lookahead = true,
         },
       }
-    end,
 
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
+      local select_maps = {
+        ['a='] = '@assignment.outer',
+        ['i='] = '@assignment.inner',
+        ['l='] = '@assignment.lhs',
+        ['r='] = '@assignment.rhs',
+        ['aa'] = '@parameter.outer',
+        ['ia'] = '@parameter.inner',
+        ['ai'] = '@conditional.outer',
+        ['ii'] = '@conditional.inner',
+        ['al'] = '@loop.outer',
+        ['il'] = '@loop.inner',
+        ['af'] = '@call.outer',
+        ['if'] = '@call.inner',
+        ['am'] = '@function.outer',
+        ['im'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+      }
+
+      for map, query in pairs(select_maps) do
+        vim.keymap.set({ 'x', 'o' }, map, function()
+          -- If il or al fails, we try a generic block as a backup
+          local success = pcall(ts_select.select_textobject, query, 'textobjects')
+          if not success and (map == 'il' or map == 'al') then
+            ts_select.select_textobject('@block.inner', 'textobjects')
+          end
+        end)
+      end
+
+      local move_maps = {
+        [']]'] = { query = '@function.outer', func = ts_move.goto_next_start },
+        [']m'] = { query = '@function.outer', func = ts_move.goto_next_end },
+        ['[['] = { query = '@function.outer', func = ts_move.goto_previous_start },
+        ['[m'] = { query = '@function.outer', func = ts_move.goto_previous_end },
+        [']c'] = { query = '@class.outer', func = ts_move.goto_next_start },
+        ['[c'] = { query = '@class.outer', func = ts_move.goto_previous_start },
+      }
+      for map, data in pairs(move_maps) do
+        vim.keymap.set({ 'n', 'x', 'o' }, map, function()
+          data.func(data.query, 'textobjects')
+        end)
+      end
+
+      vim.keymap.set('n', '<leader>ns', function()
+        ts_swap.swap_next '@parameter.inner'
+      end, { desc = 'Swap Next Param' })
+      vim.keymap.set('n', '<leader>ps', function()
+        ts_swap.swap_previous '@parameter.inner'
+      end, { desc = 'Swap Prev Param' })
+    end,
+  },
+
+  {
+  "nickjvandyke/opencode.nvim",
+  version = "*", -- Latest stable release
+  dependencies = {
+    {
+      -- `snacks.nvim` integration is recommended, but optional
+      ---@module "snacks" <- Loads `snacks.nvim` types for configuration intellisense
+      "folke/snacks.nvim",
+      optional = true,
+      opts = {
+        input = {}, -- Enhances `ask()`
+        picker = { -- Enhances `select()`
+          actions = {
+            opencode_send = function(...) return require("opencode").snacks_picker_send(...) end,
+          },
+          win = {
+            input = {
+              keys = {
+                ["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
+              },
+            },
+          },
+        },
+      },
     },
   },
+  config = function()
+    ---@type opencode.Opts
+    vim.g.opencode_opts = {
+      -- Your configuration, if any; goto definition on the type or field for details
+    }
+
+    vim.o.autoread = true -- Required for `opts.events.reload`
+
+    -- Recommended/example keymaps
+    vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, { desc = "Ask opencode…" })
+    vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end,                          { desc = "Execute opencode action…" })
+    vim.keymap.set({ "n", "t" }, "<C-.>", function() require("opencode").toggle() end,                          { desc = "Toggle opencode" })
+
+    vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
+    vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+
+    vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
+    vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+
+    -- You may want these if you use the opinionated `<C-a>` and `<C-x>` keymaps above — otherwise consider `<leader>o…` (and remove terminal mode from the `toggle` keymap)
+    vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+    vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+  end,
+},
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and

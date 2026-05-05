@@ -1,2 +1,2 @@
-alias find='fdfind'
+alias fd='fdfind'
 alias cat='batcat'
