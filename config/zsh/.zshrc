@@ -14,6 +14,7 @@ export FZF_CTRL_T_COMMAND='fd --type f --hidden --follow --exclude .git --exclud
 export FZF_TMUX_OPTS="-p"
 export LANG=en_US.UTF-8
 
+stty -ixon
 HISTFILE=$ZDOTDIR/.zsh_history
 HISTSIZE=1000
 SAVEHIST=1000
@@ -35,10 +36,12 @@ if [ "$TMUX" = "" ]; then
 		tmux new -s main -c 'tmux source ~/.config/tmux/tmux.conf';
 fi
 
+# Functions
+source "$ZDOTDIR/functions.zsh"
 # Aliases
-source $ZDOTDIR/aliases.zsh
+source "$ZDOTDIR/aliases.zsh"
 # Keymaps
-source $ZDOTDIR/keymaps.zsh
+source "$ZDOTDIR/keymaps.zsh"
 
 # OS dependent imports
 if [[ $(grep -oP '^ID=\K\w+' /etc/os-release) == "ubuntu" ]]; then
